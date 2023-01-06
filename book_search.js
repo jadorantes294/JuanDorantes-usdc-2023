@@ -18,16 +18,80 @@
  * @param {JSON} scannedTextObj - A JSON object representing the scanned text.
  * @returns {JSON} - Search results.
  * */ 
- function findSearchTermInBooks(searchTerm, scannedTextObj) {
+
+var index;// Global Variable for Index X & Y 
+var indey;
+var c=1; //Print Test Results Counter
+
+
+function findSearchTermInBooks(searchTerm, scannedTextObj) {
     /** You will need to implement your search and 
      * return the appropriate object here. */
+    console.log("Test #:",c++);//Every time you enter Increase Test Counter
+    //console.log("Scanned:", scannedTextObj);//Print SearchTerm
+    //console.log("Searched Items:", scannedTextObj);//Print scannedTextObj
 
-    var result = {
+
+
+    var result = { // Specify Structure to Return Variables
         "SearchTerm": "",
-        "Results": []
+        "Results": [
+            {
+            "ISBN": "",
+            "Page": 0,
+            "Line": 0,
+                
+            }
+        ]
     };
+
+    if(searchTerm.length ===0){//Check if String is Empty
+
+        console.log('Empty String');
+        result.Results =[];  // Save Result with Empty 
+
+    } 
+
+
+    else{
+
+        
+        for(let y in scannedTextObj){ // Searched threw the whole structure 
+            for( let i in scannedTextObj[y].Content ){//Searched threw All Content
+
+                const item_result = scannedTextObj[y].Content[i].Text;// Save whole text into a String
+
+                if(item_result.includes(result.SearchTerm)){//Use Method Include to find that specific phrase 
+
+
+                    index = i;
+                    indey = y; // Save Index and Print for X & Y
+
+                    
+                    // Use Specify Indexes to Save into Result
+                    result.SearchTerm = searchTerm; // Save Search Terms in Result
+                    result.Results[indey].ISBN= scannedTextObj[indey].ISBN;
+                    result.Results[indey].Page= scannedTextObj[indey].Content[index].Page;
+                    result.Results[indey].Line= scannedTextObj[indey].Content[index].Line; 
+                    
+                }
+                
+
+                           
+            }
+            
+           // console.log("Result Function Jason Object:",result);// Print Final Result
+
+        }
+
+
+    }
+    
+    console.log('y:',indey);
+    console.log('x:',index);
     
     return result; 
+   
 }
 
 /** Example input object. */
@@ -55,7 +119,7 @@ const twentyLeaguesIn = [
     }
 ]
     
-/** Example output object */
+/** Example output object 1 */
 const twentyLeaguesOut = {
     "SearchTerm": "the",
     "Results": [
@@ -63,6 +127,19 @@ const twentyLeaguesOut = {
             "ISBN": "9780000528531",
             "Page": 31,
             "Line": 9
+        }
+    ]
+}
+
+/** Example output object 2 */
+
+const twentyLeaguesOut2 = {
+    "SearchTerm": "now",
+    "Results": [
+        {
+            "ISBN": "9780000528531",
+            "Page": 31,
+            "Line": 8
         }
     ]
 }
@@ -84,6 +161,8 @@ const twentyLeaguesOut = {
  * */
 
 /** We can check that, given a known input, we get a known output. */
+
+// Test 1 input:the Expected:Pass
 const test1result = findSearchTermInBooks("the", twentyLeaguesIn);
 if (JSON.stringify(twentyLeaguesOut) === JSON.stringify(test1result)) {
     console.log("PASS: Test 1");
@@ -93,12 +172,87 @@ if (JSON.stringify(twentyLeaguesOut) === JSON.stringify(test1result)) {
     console.log("Received:", test1result);
 }
 
-/** We could choose to check that we get the right number of results. */
-const test2result = findSearchTermInBooks("the", twentyLeaguesIn); 
+
+ 
+if (test1result.Results.length == 1) {
+    console.log("PASS: Test 2");
+} else {
+    console.log("FAIL: Test 2");
+    console.log("Expected:", twentyLeaguesOut.Results.length);
+    console.log("Received:", test1result.Results.length);
+}
+
+// Test 2 input:now , Expected:Pass
+
+const test2result = findSearchTermInBooks("now", twentyLeaguesIn);
+if (JSON.stringify(twentyLeaguesOut2) === JSON.stringify(test2result)) {
+    console.log("PASS: Test 1");
+} else {
+    console.log("FAIL: Test 1");
+    console.log("Expected:", twentyLeaguesOut);
+    console.log("Received:", test1result);
+}
+ 
 if (test2result.Results.length == 1) {
     console.log("PASS: Test 2");
 } else {
     console.log("FAIL: Test 2");
     console.log("Expected:", twentyLeaguesOut.Results.length);
     console.log("Received:", test2result.Results.length);
+}
+
+// Test 3 input:The , Expected: Text 1 Fail because its Case Sensitive
+const test3result = findSearchTermInBooks("The", twentyLeaguesIn);
+if (JSON.stringify(twentyLeaguesOut) === JSON.stringify(test3result)) {
+    console.log("PASS: Test 1");
+} else {
+    console.log("FAIL: Test 1");
+    console.log("Expected:", twentyLeaguesOut);
+    console.log("Received:", test3result);
+}
+ 
+if (test3result.Results.length == 1) {
+    console.log("PASS: Test 2");
+} else {
+    console.log("FAIL: Test 2");
+    console.log("Expected:", twentyLeaguesOut.Results.length);
+    console.log("Received:", test2result.Results.length);
+}
+
+
+// Test 4 input:"" , Expected: Fail because the String is Empty , this is the only Test that Test 2 is expected to fail.
+const test4result = findSearchTermInBooks("", twentyLeaguesIn);
+if (JSON.stringify(twentyLeaguesOut) === JSON.stringify(test4result)) {
+    console.log("PASS: Test 1");
+} else {
+    console.log("FAIL: Test 1");
+    console.log("Expected:", twentyLeaguesOut);
+    console.log("Received:", test4result);
+}
+ 
+if (test4result.Results.length == 1) {// If it is empty it should fail
+    console.log("PASS: Test 2");
+} else {
+    console.log("FAIL: Test 2");
+    console.log("Expected:", twentyLeaguesOut.Results.length);
+    console.log("Received:", test4result.Results.length);
+}
+
+
+// Test 5 input:"wow"  
+const test5result = findSearchTermInBooks("wow", twentyLeaguesIn);
+if (JSON.stringify(twentyLeaguesOut) === JSON.stringify(test5result)) {
+    console.log("PASS: Test 1");
+} else {
+    console.log("FAIL: Test 1");
+    console.log("Expected:", twentyLeaguesOut);
+    console.log("Received:", test5result);
+}
+ 
+if (test5result.Results.length == 1) {// If it is empty it should fail
+    console.log("PASS: Test 2");
+} else {
+    console.log("FAIL: Test 2");
+    console.log("Expected:", twentyLeaguesOut.Results.length);
+    console.log("Received:", test5result.Results.length);
 }
